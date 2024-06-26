@@ -1,7 +1,7 @@
 const { compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
-const authConfig = require("../configs/auth");
-const AppError = require("../utils/AppError");
+const authConfig = require("../../configs/auth");
+const AppError = require("../../utils/AppError");
 
 class sessionsService {
     constructor(userRepository) {
@@ -30,6 +30,8 @@ class sessionsService {
             subject: String(user.id),
             expiresIn
         });
+
+        delete user.password;
 
         return { user, token };
     }
