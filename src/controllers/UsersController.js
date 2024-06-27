@@ -1,5 +1,5 @@
 const UserRepository = require("../repositories/UserRepository");
-const UserCreateService = require("../services/users/UserCreateService");
+const { UserCreateService } = require("../services/UsersService");
 
 class UsersController {
     async create(request, response) {
@@ -10,6 +10,13 @@ class UsersController {
         await userCreateService.execute({ name, email, password });
 
         return response.status(201).json();
+    }
+
+    async update(request, response) {
+        const { name, email, password, old_password } = request.body;
+        const user_id = request.user.id;
+
+
     }
 };
 

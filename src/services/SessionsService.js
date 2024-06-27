@@ -1,7 +1,7 @@
 const { compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
-const authConfig = require("../../configs/auth");
-const AppError = require("../../utils/AppError");
+const authConfig = require("../configs/auth");
+const AppError = require("../utils/AppError");
 
 class sessionsService {
     constructor(userRepository) {
@@ -15,7 +15,7 @@ class sessionsService {
 
         const user = await this.userRepository.findByEmail(email);
 
-        if(user.length < 0){
+        if(!user){
             throw new AppError("E-mail e/ou senha incorreta", 401);
         }
 
