@@ -1,21 +1,27 @@
-const { hash } = require("bcryptjs");
+const { format,  } = require("date-fns");
+const { toZonedTime } = require("date-fns-tz");
+const { hash, compare } = require("bcryptjs");
 const AppError = require("../utils/AppError");
 
-class UserCreateService {
+class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     };
 
-    async execute({ name, email, password }) {
+    async userCreate({ name, email, password, user_role }) {
+        if(user_role !== 'admin') {
+            throw new AppError("Não autorizado.", 401);
+        };
+
         if( !name || !email || !password ) {
             throw new AppError("Favor inserir todas as informações");
-        }
+        };
 
         const checkUserExist = await this.userRepository.findByEmail(email);
 
         if(checkUserExist) {
             throw new AppError("Este e-mail já está em uso.");
-        }
+        };
 
         const hashedPassword = await hash(password, 10);
 
@@ -23,20 +29,47 @@ class UserCreateService {
 
         return userCreated;
     };
+
+    async userUpdate({ name, email, password, old_password, user_id }) {
+        const user = await this.userRepository.findById(user_id);
+
+        if(!user) {
+            throw new AppError("Usuário não encontrado.", 404);
+        }
+
+        const userWithUpdateEmail = await this.userRepository.findByEmail(email);
+
+        if(userWithUpdateEmail && userWithUpdateEmail.id !== user.id) {
+            throw new AppError("Esse e-mail já está em uso. Por favor escolha outro.");
+        };
+
+        user.name = name ?? user.name;
+        user.email = email ?? user.email;
+
+        // TO DO: Quando for ADM não precisa identificar a senha antiga
+        if(password && !old_password) {
+            throw new AppError("É necessário inserir a senha antiga para definar uma nova.");
+        };
+
+        // TO DO: Quando for ADM não precisa identificar a senha antiga
+        if(password && old_password) {
+            const checkOldPassword = await compare(old_password, user.password);
+
+            if(!checkOldPassword) {
+                throw new AppError("A senha antiga inserida está incorreta.");
+            }
+
+            user.password = await hash(password, 10);
+        };
+
+        const updatedAt = new Date();
+        const zonedDate = toZonedTime(updatedAt, 'UTC');
+        user.updated_at = format(zonedDate, 'yyyy-MM-dd HH:mm:ss', { timeZone: 'UTC' });
+
+        const userUpdated = await this.userRepository.update(user);
+
+        return userUpdated;
+    };
 };
 
-class UserUpdateService {
-    constructor(userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    async execute({ name, email, password, old_password, user_id }) {
-        const user = await this.userRepository.findByEmail(email);
-
-        if(user.length)
-    }
-}
-
-module.exports = {
-    UserCreateService
-};
+module.exports = UsersService;

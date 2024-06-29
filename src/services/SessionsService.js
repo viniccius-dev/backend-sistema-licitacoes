@@ -3,7 +3,7 @@ const { sign } = require("jsonwebtoken");
 const authConfig = require("../configs/auth");
 const AppError = require("../utils/AppError");
 
-class sessionsService {
+class SessionsService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
@@ -26,7 +26,7 @@ class sessionsService {
         }
 
         const { secret, expiresIn } = authConfig.jwt;
-        const token = sign({}, secret, {
+        const token = sign({ role: user.role }, secret, {
             subject: String(user.id),
             expiresIn
         });
@@ -37,4 +37,4 @@ class sessionsService {
     }
 }
 
-module.exports = sessionsService;
+module.exports = SessionsService;
