@@ -31,6 +31,8 @@ class UsersService {
     };
 
     async userUpdate({ name, email, password, old_password, user_id, user_role }) {
+        //TO DO: Também ser possível atualizar o id de domínio 
+
         const user = await this.userRepository.findById(user_id);
 
         if(!user) {
@@ -93,8 +95,33 @@ class UsersService {
     };
 
     async userDelete({ id, user_role }) {
+        const user = await this.userRepository.findById(id);
+
         if(user_role !== 'admin' || user_role === 'admin' && user.role === 'admin') {
             throw new AppError("Não autorizado.", 401);
+        };
+
+        if(!user) {
+            throw new AppError("Usuário não encontrado.", 404);
+        };
+        
+        return await this.userRepository.delete(id);
+    };
+
+    async showUsers({ user_role }) {
+        if(user_role !== 'admin') {
+            throw new AppError("Não autorizado", 401);
+        };
+
+        const users = await this.userRepository.getUsers();
+        // users.forEach(user => delete user.password);
+
+        return users;
+    };
+
+    async showUser({ id, user_role }) {
+        if(user_role != 'admin') {
+            throw new AppError("Não autorizado", 401);
         };
 
         const user = await this.userRepository.findById(id);
@@ -102,9 +129,11 @@ class UsersService {
         if(!user) {
             throw new AppError("Usuário não encontrado.", 404);
         };
-        
-        return await this.userRepository.delete(id);
-    }
+
+        delete user.password;
+
+        return user;
+    };
 };
 
 module.exports = UsersService;

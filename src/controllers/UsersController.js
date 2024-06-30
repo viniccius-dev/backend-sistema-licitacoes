@@ -26,7 +26,7 @@ class UsersController {
     };
 
     async delete(request, response) {
-        const { id } = request.body;
+        const { id } = request.params;
         const user_role = request.user.role;
 
         const userRepository = new UserRepository();
@@ -34,6 +34,27 @@ class UsersController {
         await usersService.userDelete({ id, user_role });
 
         return response.json({ message: "Perfil deletado com sucesso."});
+    };
+
+    async index(request, response) {
+        const user_role = request.user.role;
+
+        const userRepository = new UserRepository();
+        const usersService = new UsersService(userRepository);
+        const users = await usersService.showUsers({ user_role });
+
+        return response.json(users);
+    };
+
+    async show(request, response) {
+        const { id } = request.params;
+        const user_role = request.user.role;
+
+        const userRepository = new UserRepository();
+        const usersService = new UsersService(userRepository);
+        const user = await usersService.showUser({ id, user_role });
+
+        return response.json(user);
     }
 };
 

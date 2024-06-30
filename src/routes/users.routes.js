@@ -9,8 +9,10 @@ const usersController = new UsersController();
 
 usersRoutes.use(ensureAuthenticated);
 
+usersRoutes.get("/", usersController.index);
+usersRoutes.get("/:id", usersController.show);
 usersRoutes.post("/", usersController.create);
 usersRoutes.put("/", usersController.update);
-usersRoutes.delete("/", usersController.delete);
+usersRoutes.delete("/:id", usersController.delete);
 
 module.exports = usersRoutes;
