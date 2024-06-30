@@ -30,36 +30,57 @@ class UsersService {
         return userCreated;
     };
 
-    async userUpdate({ name, email, password, old_password, user_id }) {
+    async userUpdate({ name, email, password, old_password, user_id, user_role }) {
         const user = await this.userRepository.findById(user_id);
 
         if(!user) {
             throw new AppError("Usuário não encontrado.", 404);
         }
 
-        const userWithUpdateEmail = await this.userRepository.findByEmail(email);
-
-        if(userWithUpdateEmail && userWithUpdateEmail.id !== user.id) {
-            throw new AppError("Esse e-mail já está em uso. Por favor escolha outro.");
-        };
-
         user.name = name ?? user.name;
-        user.email = email ?? user.email;
 
-        // TO DO: Quando for ADM não precisa identificar a senha antiga
-        if(password && !old_password) {
-            throw new AppError("É necessário inserir a senha antiga para definar uma nova.");
+        if(email) {
+            const userWithUpdateEmail = await this.userRepository.findByEmail(email);
+
+            if(userWithUpdateEmail && userWithUpdateEmail.id !== user.id) {
+                throw new AppError("Esse e-mail já está em uso. Por favor escolha outro.");
+            };
         };
 
-        // TO DO: Quando for ADM não precisa identificar a senha antiga
-        if(password && old_password) {
+        if(email && user_role === 'admin' && user.role === 'admin') {
+            if(!old_password) {
+                throw new AppError("É necessário inserir a senha atual para atualizar o e-mail");
+            };
+
             const checkOldPassword = await compare(old_password, user.password);
 
             if(!checkOldPassword) {
-                throw new AppError("A senha antiga inserida está incorreta.");
+                throw new AppError("A senha antiga inserida está incorreta");
             }
+            user.email = email;
+        } else {
+            user.email = email ?? user.email;
+        }
 
-            user.password = await hash(password, 10);
+        if(user_role !== 'admin' || user_role === 'admin' && user.role === 'admin') {
+            // TO DO: Quando for ADM não precisa identificar a senha antiga
+            if(password && !old_password) {
+                throw new AppError("É necessário inserir a senha antiga para definar uma nova.");
+            };
+
+            // TO DO: Quando for ADM não precisa identificar a senha antiga
+            if(password && old_password) {
+                const checkOldPassword = await compare(old_password, user.password);
+    
+                if(!checkOldPassword) {
+                    throw new AppError("A senha antiga inserida está incorreta.");
+                }
+    
+                user.password = await hash(password, 10);
+            };
+
+        } else {
+            user.password = password ? await hash(password, 10) : user.password;
         };
 
         const updatedAt = new Date();

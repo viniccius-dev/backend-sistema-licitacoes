@@ -15,11 +15,12 @@ class UsersController {
 
     async update(request, response) {
         const { name, email, password, old_password, modify_user_id } = request.body;
-        const user_id = request.user.role === 'admin' && modify_user_id ? modify_user_id : request.user.id;
+        const user_role = request.user.role;
+        const user_id = user_role === 'admin' && modify_user_id ? modify_user_id : request.user.id;
 
         const userRepository = new UserRepository();
         const usersService = new UsersService(userRepository);
-        await usersService.userUpdate({ name, email, password, old_password, user_id });
+        await usersService.userUpdate({ name, email, password, old_password, user_id, user_role });
 
         return response.json({ message: "Perfil atualizado com sucesso!"});
     }
