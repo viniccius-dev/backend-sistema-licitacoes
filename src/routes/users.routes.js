@@ -11,5 +11,6 @@ usersRoutes.use(ensureAuthenticated);
 
 usersRoutes.post("/", usersController.create);
 usersRoutes.put("/", usersController.update);
+usersRoutes.delete("/", usersController.delete);
 
 module.exports = usersRoutes;

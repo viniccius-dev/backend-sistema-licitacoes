@@ -91,6 +91,20 @@ class UsersService {
 
         return userUpdated;
     };
+
+    async userDelete({ id, user_role }) {
+        if(user_role !== 'admin' || user_role === 'admin' && user.role === 'admin') {
+            throw new AppError("Não autorizado.", 401);
+        };
+
+        const user = await this.userRepository.findById(id);
+
+        if(!user) {
+            throw new AppError("Usuário não encontrado.", 404);
+        };
+        
+        return await this.userRepository.delete(id);
+    }
 };
 
 module.exports = UsersService;

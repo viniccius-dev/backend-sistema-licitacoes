@@ -28,6 +28,10 @@ class UserRepository {
 
         return userUpdated;
     }
+
+    async delete(id) {
+        return await knex("users").where({ id }).delete();
+    }
 };
 
 module.exports = UserRepository;
