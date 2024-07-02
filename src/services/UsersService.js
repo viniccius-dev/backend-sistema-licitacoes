@@ -1,4 +1,4 @@
-const { format,  } = require("date-fns");
+const { format } = require("date-fns");
 const { toZonedTime } = require("date-fns-tz");
 const { hash, compare } = require("bcryptjs");
 const AppError = require("../utils/AppError");
@@ -8,11 +8,7 @@ class UsersService {
         this.userRepository = userRepository;
     };
 
-    async userCreate({ name, email, password, user_role }) {
-        if(user_role !== 'admin') {
-            throw new AppError("Não autorizado.", 401);
-        };
-
+    async userCreate({ name, email, password }) {
         if( !name || !email || !password ) {
             throw new AppError("Favor inserir todas as informações");
         };
@@ -97,7 +93,7 @@ class UsersService {
     async userDelete({ id, user_role }) {
         const user = await this.userRepository.findById(id);
 
-        if(user_role !== 'admin' || user_role === 'admin' && user.role === 'admin') {
+        if(user_role === 'admin' && user.role === 'admin') {
             throw new AppError("Não autorizado.", 401);
         };
 
@@ -108,22 +104,13 @@ class UsersService {
         return await this.userRepository.delete(id);
     };
 
-    async showUsers({ user_role }) {
-        if(user_role !== 'admin') {
-            throw new AppError("Não autorizado", 401);
-        };
-
+    async showUsers() {
         const users = await this.userRepository.getUsers();
-        // users.forEach(user => delete user.password);
 
         return users;
     };
 
-    async showUser({ id, user_role }) {
-        if(user_role != 'admin') {
-            throw new AppError("Não autorizado", 401);
-        };
-
+    async showUser(id) {
         const user = await this.userRepository.findById(id);
 
         if(!user) {

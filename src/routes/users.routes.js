@@ -4,15 +4,16 @@ const usersRoutes = Router();
 
 const UsersController = require("../controllers/UsersController");
 const ensureAuthenticated = require("../middlewares/ensureAuthenticated");
+const verifyUserAuthorization = require("../middlewares/verifyUserAuthorization");
 
 const usersController = new UsersController();
 
 usersRoutes.use(ensureAuthenticated);
 
-usersRoutes.get("/", usersController.index);
-usersRoutes.get("/:id", usersController.show);
-usersRoutes.post("/", usersController.create);
+usersRoutes.get("/", verifyUserAuthorization(), usersController.index);
+usersRoutes.get("/:id", verifyUserAuthorization(), usersController.show);
+usersRoutes.post("/", verifyUserAuthorization(), usersController.create);
 usersRoutes.put("/", usersController.update);
-usersRoutes.delete("/:id", usersController.delete);
+usersRoutes.delete("/:id", verifyUserAuthorization(), usersController.delete);
 
 module.exports = usersRoutes;
