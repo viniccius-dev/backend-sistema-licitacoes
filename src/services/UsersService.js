@@ -33,7 +33,7 @@ class UsersService {
 
         if(!user) {
             throw new AppError("Usuário não encontrado.", 404);
-        }
+        };
 
         user.name = name ?? user.name;
 
@@ -58,7 +58,7 @@ class UsersService {
             user.email = email;
         } else {
             user.email = email ?? user.email;
-        }
+        };
 
         if(user_role !== 'admin' || user_role === 'admin' && user.role === 'admin') {
             // TO DO: Quando for ADM não precisa identificar a senha antiga

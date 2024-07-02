@@ -5,6 +5,12 @@ class DomainRepository {
         const domain = await knex("domains").where({ url }).first();
 
         return domain;
+    };
+
+    async findById(id) {
+        const domain = await knex("domains").where({ id }).first();
+
+        return domain;
     }
 
     async create({ domain_name, url }) {
@@ -14,6 +20,12 @@ class DomainRepository {
         });
 
         return { id: domainId };
+    };
+
+    async update(domain) {
+        const domainUpdate = await knex("domains").update(domain).where({ id: domain.id });
+
+        return domainUpdate;
     }
 };
 

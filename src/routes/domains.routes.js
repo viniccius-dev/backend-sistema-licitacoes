@@ -9,7 +9,9 @@ const verifyUserAuthorization = require("../middlewares/verifyUserAuthorization"
 const domainsController = new DomainsController();
 
 domainsRoutes.use(ensureAuthenticated);
+domainsRoutes.use(verifyUserAuthorization());
 
-domainsRoutes.post("/", verifyUserAuthorization(), domainsController.create);
+domainsRoutes.post("/", domainsController.create);
+domainsRoutes.put("/:domain_id", domainsController.update);
 
 module.exports = domainsRoutes;
