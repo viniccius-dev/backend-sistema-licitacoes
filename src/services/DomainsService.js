@@ -3,7 +3,7 @@ const AppError = require("../utils/AppError");
 class DomainsService {
     constructor(domainRepository) {
         this.domainRepository = domainRepository;
-    }
+    };
 
     async domainCreate({ domain_name, url }) {
         if(!domain_name || !url) {
@@ -19,7 +19,7 @@ class DomainsService {
         const domainCreate = await this.domainRepository.create({ domain_name, url });
 
         return domainCreate;
-    }
+    };
 
     async domainUpdate({ domain_name, url, domain_id }) {
         const domain = await this.domainRepository.findById(domain_id);
@@ -34,6 +34,32 @@ class DomainsService {
         const domainUpdate = await this.domainRepository.update(domain);
 
         return domainUpdate;
+    };
+
+    async domainDelete(domain_id) {
+        const domain = await this.domainRepository.findById(domain_id);
+
+        if(!domain) {
+            throw new AppError("Domínio não encontrado.", 404);
+        };
+
+        return await this.domainRepository.delete(domain_id);
+    };
+
+    async showDomains() {
+        const domains = await this.domainRepository.getDomains();
+
+        return domains;
+    };
+
+    async showDomain(domain_id) {
+        const domain = await this.domainRepository.findById(domain_id);
+
+        if(!domain) {
+            throw new AppError("Domínio não encontrado.", 404);
+        };
+
+        return domain;
     }
 }
 
