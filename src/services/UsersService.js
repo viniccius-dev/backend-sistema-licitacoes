@@ -3,13 +3,14 @@ const { toZonedTime } = require("date-fns-tz");
 const { hash, compare } = require("bcryptjs");
 const AppError = require("../utils/AppError");
 
+const DomainRepository = require("../repositories/DomainRepository");
 class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     };
 
-    async userCreate({ name, email, password }) {
-        if( !name || !email || !password ) {
+    async userCreate({ name, email, password, domain_id }) {
+        if( !name || !email || !password || !domain_id ) {
             throw new AppError("Favor inserir todas as informações");
         };
 
@@ -20,13 +21,19 @@ class UsersService {
         };
 
         const hashedPassword = await hash(password, 10);
+        const domainRepository = new DomainRepository();
+        const domain = await domainRepository.findById(domain_id);
 
-        const userCreated = await this.userRepository.create({ name, email, password: hashedPassword });
+        if(!domain) {
+            throw new AppError("Domínio não encontrado.", 404);
+        };
+
+        const userCreated = await this.userRepository.create({ name, email, password: hashedPassword, domain_id });
 
         return userCreated;
     };
 
-    async userUpdate({ name, email, password, old_password, user_id, user_role }) {
+    async userUpdate({ name, email, password, old_password, user_id, domain_id, user_role }) {
         //TO DO: Também ser possível atualizar o id de domínio 
 
         const user = await this.userRepository.findById(user_id);
@@ -43,30 +50,54 @@ class UsersService {
             if(userWithUpdateEmail && userWithUpdateEmail.id !== user.id) {
                 throw new AppError("Esse e-mail já está em uso. Por favor escolha outro.");
             };
+
+            if(user_role === 'admin' && user.role === 'admin') {
+                if(!old_password) {
+                    throw new AppError("É necessário inserir a senha atual para atualizar o e-mail");
+                };
+    
+                const checkOldPassword = await compare(old_password, user.password);
+    
+                if(!checkOldPassword) {
+                    throw new AppError("A senha antiga inserida está incorreta");
+                }
+                user.email = email;
+            } else {
+                user.email = email ?? user.email;
+            };
         };
 
-        if(email && user_role === 'admin' && user.role === 'admin') {
-            if(!old_password) {
-                throw new AppError("É necessário inserir a senha atual para atualizar o e-mail");
+        if(domain_id && user_role === 'admin') {
+            const domainRepository = new DomainRepository();
+
+            const domain = await domainRepository.findById(domain_id);
+
+            if(!domain) {
+                throw new AppError("Domínio não encontrado.", 404);
             };
 
-            const checkOldPassword = await compare(old_password, user.password);
-
-            if(!checkOldPassword) {
-                throw new AppError("A senha antiga inserida está incorreta");
-            }
-            user.email = email;
-        } else {
-            user.email = email ?? user.email;
-        };
+            if(user_role === 'admin' && user.role === 'admin') {
+                if(!old_password) {
+                    throw new AppError("É necessário inserir a senha atual para atualizar o domínio vinculado");
+                };
+    
+                const checkOldPassword = await compare(old_password, user.password);
+    
+                if(!checkOldPassword) {
+                    throw new AppError("A senha antiga inserida está incorreta");
+                }
+                
+                user.domain_id = domain_id;
+            } else {
+                user.domain_id = domain_id ?? user.domain_id;
+            };
+        }
 
         if(user_role !== 'admin' || user_role === 'admin' && user.role === 'admin') {
-            // TO DO: Quando for ADM não precisa identificar a senha antiga
             if(password && !old_password) {
                 throw new AppError("É necessário inserir a senha antiga para definar uma nova.");
             };
 
-            // TO DO: Quando for ADM não precisa identificar a senha antiga
             if(password && old_password) {
                 const checkOldPassword = await compare(old_password, user.password);
     

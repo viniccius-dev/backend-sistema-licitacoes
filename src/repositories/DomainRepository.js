@@ -36,7 +36,7 @@ class DomainRepository {
         const domains = await knex("domains").orderBy("domain_name");
 
         return domains;
-    }
+    };
 };
 
 module.exports = DomainRepository;
