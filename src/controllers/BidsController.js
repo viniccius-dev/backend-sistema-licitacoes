@@ -31,6 +31,34 @@ class BidsController {
 
         return response.status(201).json({ message: "Licitação cadastrada com sucesso."});
     };
+
+    async update(request, response) {
+        const {
+            bidding_modality,
+            bidding_process_number,
+            modality_process_number,
+            status,
+            object,
+            observations,
+            realized_at
+        } = request.body;
+        const { bid_id } = request.params;
+
+        const bidRepository = new BidRepository();
+        const bidsService = new BidsService(bidRepository);
+        await bidsService.bidUpdate({
+            bidding_modality,
+            bidding_process_number,
+            modality_process_number,
+            status,
+            object,
+            observations,
+            realized_at,
+            bid_id
+        });
+
+        return response.json({ message: "Licitação atualizada com sucesso." });
+    }
 };
 
 module.exports = BidsController;

@@ -1,6 +1,12 @@
 const knex = require("../database/knex");
 
 class BidRepository {
+    async findById(id) {
+        const bid = await knex("bids").where({ id }).first();
+
+        return bid;
+    }
+
     async create({
         bidding_modality,
         bidding_process_number,
@@ -23,6 +29,12 @@ class BidRepository {
         });
 
         return { id: bidId };
+    }
+
+    async update(bid) {
+        const bidUpdated = await knex("bids").update(bid).where({ id: bid.id });
+
+        return bidUpdated;
     }
 };
 
