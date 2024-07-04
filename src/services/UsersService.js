@@ -21,6 +21,7 @@ class UsersService {
         };
 
         const hashedPassword = await hash(password, 10);
+        
         const domainRepository = new DomainRepository();
         const domain = await domainRepository.findById(domain_id);
 
@@ -34,7 +35,6 @@ class UsersService {
     };
 
     async userUpdate({ name, email, password, old_password, user_id, domain_id, user_role }) {
-        //TO DO: Também ser possível atualizar o id de domínio 
 
         const user = await this.userRepository.findById(user_id);
 

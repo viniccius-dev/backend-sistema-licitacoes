@@ -26,7 +26,7 @@ class SessionsService {
         }
 
         const { secret, expiresIn } = authConfig.jwt;
-        const token = sign({ role: user.role }, secret, {
+        const token = sign({ role: user.role, domain_id: user.domain_id }, secret, {
             subject: String(user.id),
             expiresIn
         });
