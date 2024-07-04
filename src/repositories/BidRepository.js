@@ -5,7 +5,7 @@ class BidRepository {
         const bid = await knex("bids").where({ id }).first();
 
         return bid;
-    }
+    };
 
     async create({
         bidding_modality,
@@ -29,13 +29,17 @@ class BidRepository {
         });
 
         return { id: bidId };
-    }
+    };
 
     async update(bid) {
         const bidUpdated = await knex("bids").update(bid).where({ id: bid.id });
 
         return bidUpdated;
-    }
+    };
+
+    async delete(id) {
+        return await knex("bids").where({ id }).delete();
+    };
 };
 
 module.exports = BidRepository;

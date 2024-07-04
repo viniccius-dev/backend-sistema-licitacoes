@@ -11,5 +11,6 @@ bidsRoutes.use(ensureAuthenticated);
 
 bidsRoutes.post("/", bidsController.create);
 bidsRoutes.put("/:bid_id", bidsController.update);
+bidsRoutes.delete("/:bid_id", bidsController.delete);
 
 module.exports = bidsRoutes;

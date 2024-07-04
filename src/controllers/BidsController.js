@@ -59,6 +59,16 @@ class BidsController {
 
         return response.json({ message: "Licitação atualizada com sucesso." });
     }
+
+    async delete(request, response) {
+        const { bid_id } = request.params;
+
+        const bidRepository = new BidRepository();
+        const bidsService = new BidsService(bidRepository);
+        await bidsService.bidDelete(bid_id);
+
+        return response.json({ message: "Licitação deletada com sucesso!" });
+    }
 };
 
 module.exports = BidsController;

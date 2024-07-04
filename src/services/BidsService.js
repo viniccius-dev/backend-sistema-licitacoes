@@ -78,6 +78,16 @@ class BidsService {
         const bidUpdated = await this.bidRepository.update(bid);
 
         return bidUpdated;
+    };
+
+    async bidDelete(bid_id) {
+        const bid = await this.bidRepository.findById(bid_id);
+
+        if(!bid) {
+            throw new AppError("Licitação não encontrada.", 404);
+        };
+
+        return await this.bidRepository.delete(bid.id);
     }
 };
 
