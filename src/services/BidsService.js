@@ -88,6 +88,12 @@ class BidsService {
         };
 
         return await this.bidRepository.delete(bid.id);
+    };
+
+    async showBids(domain_id) {
+        const bids = await this.bidRepository.getBids(domain_id);
+
+        return bids;
     }
 };
 

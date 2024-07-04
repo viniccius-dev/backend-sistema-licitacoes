@@ -40,6 +40,36 @@ class BidRepository {
     async delete(id) {
         return await knex("bids").where({ id }).delete();
     };
+
+    async getBids(domain_id) {
+        const query = knex("bids").select(
+          'id',
+          'bidding_modality',
+          'bidding_process_number',
+          'modality_process_number',
+          'status',
+          'object',
+          'observations',
+          'realized_at',
+          'domain_id',
+          knex.raw("CAST(SUBSTR(bidding_process_number, 1, INSTR(bidding_process_number, '/') - 1) AS INTEGER) as bidding_process_id"),
+          knex.raw("CAST(SUBSTR(bidding_process_number, INSTR(bidding_process_number, '/') + 1) AS INTEGER) as bidding_process_year")
+        )
+        .orderBy("bidding_process_year", "desc")
+        .orderBy("bidding_process_id", "desc");
+      
+        if (domain_id) {
+          query.where({ domain_id });
+        }
+      
+        try {
+          const bids = await query;
+          return bids;
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
+    };
 };
 
 module.exports = BidRepository;

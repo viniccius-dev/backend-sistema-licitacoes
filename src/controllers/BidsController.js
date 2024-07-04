@@ -69,6 +69,16 @@ class BidsController {
 
         return response.json({ message: "Licitação deletada com sucesso!" });
     }
+
+    async index(request, response) {
+        const { domain_id } = request.user;
+
+        const bidRepository = new BidRepository();
+        const bidsService = new BidsService(bidRepository);
+        const bids = await bidsService.showBids(domain_id);
+
+        return response.json(bids);
+    }
 };
 
 module.exports = BidsController;
