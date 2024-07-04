@@ -13,5 +13,6 @@ bidsRoutes.post("/", bidsController.create);
 bidsRoutes.put("/:bid_id", bidsController.update);
 bidsRoutes.delete("/:bid_id", bidsController.delete);
 bidsRoutes.get("/", bidsController.index);
+bidsRoutes.get("/:bid_id", bidsController.show);
 
 module.exports = bidsRoutes;

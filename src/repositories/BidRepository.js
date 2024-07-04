@@ -1,10 +1,20 @@
 const knex = require("../database/knex");
 
 class BidRepository {
-    async findById(id) {
-        const bid = await knex("bids").where({ id }).first();
+    async findByIdAndDomain({ bid_id, domain_id }) {
+        const query = knex("bids").where({ id: bid_id }).first();
 
-        return bid;
+        if(domain_id) {
+            query.where({ domain_id });
+        }
+      
+        try {
+          const bid = await query;
+          return bid;
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
     };
 
     async create({

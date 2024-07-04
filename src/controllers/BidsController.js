@@ -42,6 +42,7 @@ class BidsController {
             observations,
             realized_at
         } = request.body;
+        const { domain_id } = request.user;
         const { bid_id } = request.params;
 
         const bidRepository = new BidRepository();
@@ -54,21 +55,23 @@ class BidsController {
             object,
             observations,
             realized_at,
-            bid_id
+            bid_id,
+            domain_id
         });
 
         return response.json({ message: "Licitação atualizada com sucesso." });
-    }
+    };
 
     async delete(request, response) {
         const { bid_id } = request.params;
+        const { domain_id } = request.user;
 
         const bidRepository = new BidRepository();
         const bidsService = new BidsService(bidRepository);
-        await bidsService.bidDelete(bid_id);
+        await bidsService.bidDelete({ bid_id, domain_id });
 
         return response.json({ message: "Licitação deletada com sucesso!" });
-    }
+    };
 
     async index(request, response) {
         const { domain_id } = request.user;
@@ -78,6 +81,17 @@ class BidsController {
         const bids = await bidsService.showBids(domain_id);
 
         return response.json(bids);
+    };
+
+    async show(request, response) {
+        const { bid_id } = request.params;
+        const { domain_id } = request.user;
+
+        const bidRepository = new BidRepository();
+        const bidsService = new BidsService(bidRepository);
+        const bid = await bidsService.showBid({ bid_id, domain_id });
+
+        return response.json(bid);
     }
 };
 

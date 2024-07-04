@@ -55,9 +55,10 @@ class BidsService {
         object,
         observations,
         realized_at,
-        bid_id
+        bid_id,
+        domain_id
     }) {
-        const bid = await this.bidRepository.findById(bid_id);
+        const bid = await this.bidRepository.findByIdAndDomain({ bid_id, domain_id });
 
         if(!bid) {
             throw new AppError("Licitação não encontrada.", 404);
@@ -80,8 +81,8 @@ class BidsService {
         return bidUpdated;
     };
 
-    async bidDelete(bid_id) {
-        const bid = await this.bidRepository.findById(bid_id);
+    async bidDelete({ bid_id, domain_id }) {
+        const bid = await this.bidRepository.findByIdAndDomain({ bid_id, domain_id });
 
         if(!bid) {
             throw new AppError("Licitação não encontrada.", 404);
@@ -94,6 +95,16 @@ class BidsService {
         const bids = await this.bidRepository.getBids(domain_id);
 
         return bids;
+    };
+
+    async showBid({ bid_id, domain_id }) {
+        const bid = await this.bidRepository.findByIdAndDomain({ bid_id, domain_id });
+
+        if(!bid) {
+            throw new AppError("Licitação não encontrada.", 404);
+        };
+
+        return bid;
     }
 };
 
