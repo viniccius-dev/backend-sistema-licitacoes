@@ -3,7 +3,7 @@ exports.up = knex => knex.schema.createTable("users", table => {
     table.text("name").notNullable();
     table.text("email").notNullable();
     table.text("password").notNullable();
-    table.integer("domain_id").references("id").inTable("domains");
+    table.integer("domain_id").references("id").inTable("domains").onDelete("CASCADE");
 
     table
     .enum("role", ["admin", "common"], { useNative: true, enumName: "roles" })

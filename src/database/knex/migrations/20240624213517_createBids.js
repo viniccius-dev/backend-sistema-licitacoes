@@ -8,7 +8,7 @@ exports.up = knex => knex.schema.createTable("bids", table => {
     table.text("observations");
     table.timestamp("realized_at").notNullable();
 
-    table.integer("domain_id").references("id").inTable("domains");
+    table.integer("domain_id").references("id").inTable("domains").onDelete("CASCADE");
 
     table.timestamp("created_at").default(knex.fn.now());
     table.timestamp("updated_at").default(knex.fn.now());
