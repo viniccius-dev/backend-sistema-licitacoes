@@ -7,6 +7,7 @@ exports.up = knex => knex.schema.createTable("attachments", table => {
 
     table.text("attachment");
     table.integer("bid_id").references("id").inTable("bids").onDelete("CASCADE").notNullable();
+    table.integer("domain_id").references("id").inTable("domains").onDelete("CASCADE").notNullable();
 });
 
 exports.down = knex => knex.schema.dropTable("attachments");

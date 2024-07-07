@@ -14,11 +14,13 @@ const bidAttachmentController = new BidAttachmentController();
 
 bidsRoutes.use(ensureAuthenticated);
 
+bidsRoutes.post("/attachments/:bid_id", upload.array("attachment"), bidAttachmentController.create);
+bidsRoutes.delete("/attachments", bidAttachmentController.delete);
+
 bidsRoutes.post("/", bidsController.create);
 bidsRoutes.put("/:bid_id", bidsController.update);
 bidsRoutes.delete("/:bid_id", bidsController.delete);
 bidsRoutes.get("/", bidsController.index);
 bidsRoutes.get("/:bid_id", bidsController.show);
-bidsRoutes.post("/attachments/:bid_id", upload.array("attachment"), bidAttachmentController.create);
 
 module.exports = bidsRoutes;
